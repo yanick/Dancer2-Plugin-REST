@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use Dancer::ModuleLoader;
 use Test::More import => ['!pass'];
+use JSON;
 
 # Dancer::Test had a bug in version previous 1.3059_01 that prevent this test
 # from running correctly.
@@ -10,6 +11,8 @@ $dancer_version =~ s/_//g;
 plan skip_all => "Dancer 1.3059_01 is needed for this test (you have $dancer_version)"
   if $dancer_version < 1.305901;
 
+my $api = int $dancer_version;
+
 plan tests => 8;
 
 {
@@ -17,6 +20,8 @@ plan tests => 8;
     use Dancer;
     use Dancer::Plugin::REST;
     use Test::More import => ['!pass'];
+
+    set serializer => 'JSON';
 
     resource user => 
         'get' => \&on_get_user,
@@ -62,42 +67,51 @@ plan tests => 8;
         "resource must have 4 hooks";
 }
 
-use Dancer::Test;
+use Dancer::Test apps => [ 'Webservice' ];
 
 my $r = dancer_response(GET => '/user/1');
-is_deeply $r->{content}, {user => undef},
+is_deeply decode_json($r->content), {user => undef},
     "user 1 is not defined";
 
-$r = dancer_response(POST => '/user', { body => {name => 'Alexis' }});
-is_deeply $r->{content}, { user => { id => 1, name => "Alexis" } },
+$r = dancer_response( Dancer::Core::Request->new(
+        method => 'POST',
+        path => '/user',
+        body => encode_json( { name => 'Alexis' } ),
+        content_type => 'application/json',
+));
+
+is_deeply decode_json($r->content), { user => { id => 1, name => "Alexis" } },
     "create user works";
 
 $r = dancer_response(GET => '/user/1');
-is_deeply $r->{content}, {user => { id => 1, name => 'Alexis'}},
+is_deeply decode_json($r->content), {user => { id => 1, name => 'Alexis'}},
     "user 1 is defined";
 
-$r = dancer_response(PUT => '/user/1', { 
-    body => {
-        nick => 'sukria', 
-        name => 'Alexis Sukrieh' 
-    }
-});
-is_deeply $r->{content}, {user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria'}},
+$r = dancer_response( Dancer::Core::Request->new(
+        method => 'PUT',
+        path => '/user/1',
+        body => encode_json( { name => 'Alexis Sukrieh', nick => 'sukria' } ),
+        content_type => 'application/json',
+));
+
+is_deeply decode_json($r->content), {user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria'}},
     "user 1 is updated";
 
 $r = dancer_response(DELETE => '/user/1');
-is_deeply $r->{content}, {user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria'}},
+is_deeply decode_json($r->content), {user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria'}},
     "user 1 is deleted";
 
 $r = dancer_response(GET => '/user/1');
-is_deeply $r->{content}, {user => undef},
+is_deeply decode_json($r->content), {user => undef},
     "user 1 is not defined";
 
-$r = dancer_response(POST => '/user', { 
-    body => {
-        name => 'Franck Cuny' 
-    }
-});
-is_deeply $r->{content}, { user => { id => 2, name => "Franck Cuny" } },
+$r = dancer_response( Dancer::Core::Request->new(
+        method => 'POST',
+        path => '/user',
+        body => encode_json( { name => 'Franck Cuny' } ),
+        content_type => 'application/json',
+));
+
+is_deeply decode_json($r->content), { user => { id => 2, name => "Franck Cuny" } },
     "id is correctly increased";
 

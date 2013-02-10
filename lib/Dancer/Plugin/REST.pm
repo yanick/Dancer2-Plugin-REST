@@ -6,8 +6,17 @@ use Carp 'croak';
 use Dancer ':syntax';
 use Dancer::Plugin;
 
+
 our $AUTHORITY = 'SUKRIA';
 our $VERSION   = '0.07';
+
+my $dancer_version = int Dancer->VERSION;
+
+use Moo;
+
+if ( $dancer_version < 2 ) {
+    with 'Dancer::Plugin';
+}
 
 my $content_types = {
     json => 'application/json',
@@ -16,6 +25,8 @@ my $content_types = {
 };
 
 register prepare_serializer_for_format => sub {
+    shift if $dancer_version >= 2;
+
     my $conf        = plugin_setting;
     my $serializers = (
         ($conf && exists $conf->{serializers})
@@ -31,15 +42,8 @@ register prepare_serializer_for_format => sub {
         my $format = params->{'format'};
         return unless defined $format;
 
-        my $serializer = $serializers->{$format};
-        unless (defined $serializer) {
-            return halt(
-                Dancer::Error->new(
-                    code    => 404,
-                    message => "unsupported format requested: " . $format
-                )
-            );
-        }
+        my $serializer = $serializers->{$format} 
+            or return send_error "unsupported format requested: " . $format, 404;
 
         set serializer => $serializer;
         my $ct = $content_types->{$format} || setting('content_type');
@@ -48,6 +52,7 @@ register prepare_serializer_for_format => sub {
 };
 
 register resource => sub {
+    shift if $dancer_version >= 2;
     my ($resource, %triggers) = @_;
 
     croak "resource should be given with triggers"
@@ -152,16 +157,16 @@ for my $code (keys %http_codes) {
     $helper_name = "status_${helper_name}";
 
     register $helper_name => sub {
-        if ($code >= 400) {
-            send_entity({error => $_[0]}, $code);
-        }
-        else {
-            send_entity($_[0], $code);
-        }
+        shift if $dancer_version >= 2;
+
+        send_entity(
+            ( $code >= 400 ? {error => $_[0]} : $_[0] ),
+            $code
+        );
     };
 }
 
-register_plugin;
+register_plugin for_versions => [1,2];
 1;
 __END__
 

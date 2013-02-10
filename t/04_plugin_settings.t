@@ -18,6 +18,7 @@ my $yaml = YAML::Dump($data);
     use Dancer::Plugin::REST;
 
     set environment => 'test';
+    set serializer => 'JSON';
     prepare_serializer_for_format;
 
     get '/' => sub { "root" };
@@ -26,7 +27,7 @@ my $yaml = YAML::Dump($data);
     };
 }
 
-use Dancer::Test;
+use Dancer::Test apps => [ 'Webservice' ];
 
 my @tests = (
     {

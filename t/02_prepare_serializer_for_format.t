@@ -27,27 +27,27 @@ my $yaml = YAML::Dump($data);
         $data;
     };
 }
-use Dancer::Test;
+use Dancer::Test apps => [ 'Webservice' ];
 
 my @tests = (
     {
         request => [GET => '/'],
-        content_type => 'text/html',
+        content_type => qr'text/html',
         response => 'root',
     },
     { 
         request => [GET => '/foo.json'],
-        content_type => 'application/json',
+        content_type => qr'application/json',
         response => $json
     },
     { 
         request => [GET => '/foo.yml'],
-        content_type => 'text/x-yaml',
+        content_type => qr'text/x-yaml',
         response => $yaml,
     },
     {
         request => [GET => '/'],
-        content_type => 'text/html',
+        content_type => qr'text/html',
         response => 'root',
     },
 );
@@ -56,7 +56,7 @@ plan tests => scalar(@tests) * 2;
 
 for my $test ( @tests ) {
     my $response = dancer_response(@{ $test->{request} });
-    is($response->header('Content-Type'), 
+    like($response->header('Content-Type'), 
        $test->{content_type},
        "headers have content_type set to ".$test->{content_type});
 
