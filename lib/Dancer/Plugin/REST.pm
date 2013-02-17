@@ -31,7 +31,7 @@ my $content_types = {
 };
 
 register prepare_serializer_for_format => sub {
-    shift if $dancer_version >= 2;
+    my $app = $dancer_version >= 2 ? shift : undef;
 
     my $conf        = plugin_setting;
     my $serializers = (
@@ -68,15 +68,15 @@ register prepare_serializer_for_format => sub {
 };
 
 register resource => sub {
-    shift if $dancer_version >= 2;
+    my $self = $dancer_version >= 2 ? shift : undef;
 
     my ($resource, %triggers) = @_;
 
     my %actions = (
-        get    => \&get,
-        update => \&put,
-        create => \&post,
-        delete => \&del,
+        get    => 'get',
+        update => 'put',
+        create => 'post',
+        delete => 'del',
     );
 
     croak "resource should be given with triggers"
@@ -84,9 +84,21 @@ register resource => sub {
              and grep { $triggers{$_} } keys %actions;
 
     while( my( $action, $code ) = each %triggers ) {
-        $actions{$action}->( $_ => $code )
-            for map { sprintf $_, '/:id' x ($action ne 'create') }
-                    "/${resource}%s.:format", "/${resource}%s";
+        if ( $dancer_version >= 2 ) {
+            $self->app->add_route( 
+                method => $actions{$action},
+                regexp => $_,
+                code   => $code,
+            ) for map { sprintf $_, '/:id' x ($action ne 'create') }
+                        "/${resource}%s.:format", "/${resource}%s";
+        }
+        else {
+            no strict;
+            my $sub = \&{ $actions{$action} };
+            $sub->( $_ => $code )
+                for map { sprintf $_, '/:id' x ($action ne 'create') }
+                        "/${resource}%s.:format", "/${resource}%s";
+        }
     }
 };
 
