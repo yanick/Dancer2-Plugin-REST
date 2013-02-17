@@ -69,26 +69,25 @@ register prepare_serializer_for_format => sub {
 
 register resource => sub {
     shift if $dancer_version >= 2;
+
     my ($resource, %triggers) = @_;
+
+    my %actions = (
+        get    => \&get,
+        update => \&put,
+        create => \&post,
+        delete => \&del,
+    );
 
     croak "resource should be given with triggers"
       unless defined $resource
-          and defined $triggers{get}
-          and defined $triggers{update}
-          and defined $triggers{delete}
-          and defined $triggers{create};
+             and grep { $triggers{$_} } keys %actions;
 
-    get "/${resource}/:id.:format" => $triggers{get};
-    get "/${resource}/:id"         => $triggers{get};
-
-    put "/${resource}/:id.:format" => $triggers{update};
-    put "/${resource}/:id"         => $triggers{update};
-
-    post "/${resource}.:format" => $triggers{create};
-    post "/${resource}"         => $triggers{create};
-
-    del "/${resource}/:id.:format" => $triggers{delete};
-    del "/${resource}/:id"         => $triggers{delete};
+    while( my( $action, $code ) = each %triggers ) {
+        $actions{$action}->( $_ => $code )
+            for map { sprintf $_, '/:id' x ($action ne 'create') }
+                    "/${resource}%s.:format", "/${resource}%s";
+    }
 };
 
 register send_entity => sub {

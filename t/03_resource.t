@@ -41,7 +41,9 @@ plan tests => 8;
     use Dancer::Plugin::REST;
     use Test::More import => ['!pass'];
 
+    set show_errors => 1;
     set serializer => 'JSON';
+    set logger => 'console';
 
     resource user => 
         'get' => \&on_get_user,
@@ -82,9 +84,9 @@ plan tests => 8;
         { user => $users->{$id} };
     }
 
-    eval { resource failure => get => sub { 'GET' } };
+    eval { resource 'failure'; };
     like $@, qr{resource should be given with triggers}, 
-        "resource must have 4 hooks";
+        "resource must have at least one action";
 }
 
 use Dancer::Test apps => [ 'Webservice' ];
