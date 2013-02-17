@@ -13,6 +13,26 @@ plan skip_all => "Dancer 1.3059_01 is needed for this test (you have $dancer_ver
 
 my $api = int $dancer_version;
 
+# wrapper to keep all Dancers happy
+sub request {
+    my %arg = @_;
+
+    return ( $arg{method}, $arg{path}, {
+        body => $arg{body},
+    } ) if $api < 2;
+
+    require Dancer::Core::Request;
+
+    $arg{body} = encode_json($arg{body})
+        if ref $arg{body};
+
+    return Dancer::Core::Request->new(
+        %arg,
+        content_type => 'application/json',
+    );
+
+}
+
 plan tests => 8;
 
 {
@@ -73,11 +93,10 @@ my $r = dancer_response(GET => '/user/1');
 is_deeply decode_json($r->content), {user => undef},
     "user 1 is not defined";
 
-$r = dancer_response( Dancer::Core::Request->new(
+$r = dancer_response( request(
         method => 'POST',
         path => '/user',
-        body => encode_json( { name => 'Alexis' } ),
-        content_type => 'application/json',
+        body => { name => 'Alexis' },
 ));
 
 is_deeply decode_json($r->content), { user => { id => 1, name => "Alexis" } },
@@ -87,11 +106,10 @@ $r = dancer_response(GET => '/user/1');
 is_deeply decode_json($r->content), {user => { id => 1, name => 'Alexis'}},
     "user 1 is defined";
 
-$r = dancer_response( Dancer::Core::Request->new(
+$r = dancer_response( request(
         method => 'PUT',
         path => '/user/1',
-        body => encode_json( { name => 'Alexis Sukrieh', nick => 'sukria' } ),
-        content_type => 'application/json',
+        body => { name => 'Alexis Sukrieh', nick => 'sukria' },
 ));
 
 is_deeply decode_json($r->content), {user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria'}},
@@ -105,11 +123,10 @@ $r = dancer_response(GET => '/user/1');
 is_deeply decode_json($r->content), {user => undef},
     "user 1 is not defined";
 
-$r = dancer_response( Dancer::Core::Request->new(
+$r = dancer_response( request(
         method => 'POST',
         path => '/user',
-        body => encode_json( { name => 'Franck Cuny' } ),
-        content_type => 'application/json',
+        body => { name => 'Franck Cuny' },
 ));
 
 is_deeply decode_json($r->content), { user => { id => 2, name => "Franck Cuny" } },

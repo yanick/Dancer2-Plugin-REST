@@ -14,8 +14,14 @@ my $dancer_version = int Dancer->VERSION;
 
 use Moo;
 
-if ( $dancer_version < 2 ) {
+if ( $dancer_version >= 2 ) {
     with 'Dancer::Plugin';
+}
+else {
+    require Dancer::Hook;
+    require Dancer::Factory::Hook;
+    require Dancer::Response;
+    require Dancer::SharedData;
 }
 
 my $content_types = {
@@ -42,8 +48,18 @@ register prepare_serializer_for_format => sub {
         my $format = params->{'format'};
         return unless defined $format;
 
-        my $serializer = $serializers->{$format} 
-            or return send_error "unsupported format requested: " . $format, 404;
+        my $serializer = $serializers->{$format};
+
+        unless( $serializer ) {
+            return halt(
+                Dancer::Error->new(
+                    code    => 404,
+                    message => "unsupported format requested: " . $format
+                )
+            ) if $dancer_version < 2;
+
+            return send_error "unsupported format requested: " . $format, 404;
+        }
 
         set serializer => $serializer;
         my $ct = $content_types->{$format} || setting('content_type');
