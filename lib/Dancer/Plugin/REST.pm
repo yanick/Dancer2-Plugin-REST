@@ -76,7 +76,7 @@ register resource => sub {
         get    => 'get',
         update => 'put',
         create => 'post',
-        delete => 'del',
+        delete => 'delete',
     );
 
     croak "resource should be given with triggers"
