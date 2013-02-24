@@ -1,28 +1,18 @@
-package Dancer::Plugin::REST;
+package Dancer2::Plugin::REST;
 use strict;
 use warnings;
 
 use Carp 'croak';
-use Dancer ':syntax';
-use Dancer::Plugin;
+use Dancer2 ':syntax';
+use Dancer2::Plugin;
 
 
 our $AUTHORITY = 'SUKRIA';
 our $VERSION   = '0.07';
 
-my $dancer_version = int Dancer->VERSION;
-
 use Moo;
 
-if ( $dancer_version >= 2 ) {
-    with 'Dancer::Plugin';
-}
-else {
-    require Dancer::Hook;
-    require Dancer::Factory::Hook;
-    require Dancer::Response;
-    require Dancer::SharedData;
-}
+with 'Dancer2::Plugin';
 
 my $content_types = {
     json => 'application/json',
@@ -31,7 +21,7 @@ my $content_types = {
 };
 
 register prepare_serializer_for_format => sub {
-    my $app = $dancer_version >= 2 ? shift : undef;
+    my $app = shift;
 
     my $conf        = plugin_setting;
     my $serializers = (
@@ -51,13 +41,6 @@ register prepare_serializer_for_format => sub {
         my $serializer = $serializers->{$format};
 
         unless( $serializer ) {
-            return halt(
-                Dancer::Error->new(
-                    code    => 404,
-                    message => "unsupported format requested: " . $format
-                )
-            ) if $dancer_version < 2;
-
             return send_error "unsupported format requested: " . $format, 404;
         }
 
@@ -68,7 +51,7 @@ register prepare_serializer_for_format => sub {
 };
 
 register resource => sub {
-    my $self = $dancer_version >= 2 ? shift : undef;
+    my $self = shift;
 
     my ($resource, %triggers) = @_;
 
@@ -84,21 +67,12 @@ register resource => sub {
              and grep { $triggers{$_} } keys %actions;
 
     while( my( $action, $code ) = each %triggers ) {
-        if ( $dancer_version >= 2 ) {
             $self->app->add_route( 
                 method => $actions{$action},
                 regexp => $_,
                 code   => $code,
             ) for map { sprintf $_, '/:id' x ($action ne 'create') }
                         "/${resource}%s.:format", "/${resource}%s";
-        }
-        else {
-            no strict;
-            my $sub = \&{ $actions{$action} };
-            $sub->( $_ => $code )
-                for map { sprintf $_, '/:id' x ($action ne 'create') }
-                        "/${resource}%s.:format", "/${resource}%s";
-        }
     }
 };
 
@@ -184,7 +158,7 @@ for my $code (keys %http_codes) {
     $helper_name = "status_${helper_name}";
 
     register $helper_name => sub {
-        shift if $dancer_version >= 2;
+        shift;
 
         send_entity(
             ( $code >= 400 ? {error => $_[0]} : $_[0] ),
@@ -201,14 +175,14 @@ __END__
 
 =head1 NAME
 
-Dancer::Plugin::REST - A plugin for writing RESTful apps with Dancer
+Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
 
 =head1 SYNOPSYS
 
     package MyWebService;
 
-    use Dancer;
-    use Dancer::Plugin::REST;
+    use Dancer2;
+    use Dancer2::Plugin::REST;
 
     prepare_serializer_for_format;
 
@@ -227,7 +201,7 @@ Dancer::Plugin::REST - A plugin for writing RESTful apps with Dancer
 
 =head1 DESCRIPTION
 
-This plugin helps you write a RESTful webservice with Dancer.
+This plugin helps you write a RESTful webservice with Dancer2.
 
 =head1 KEYWORDS
 
@@ -239,7 +213,7 @@ change the serializer when a format is detected in the URI.
 That means that each route you define with a B<:format> token will trigger a
 serializer definition, if the format is known.
 
-This lets you define all the REST actions you like as regular Dancer route
+This lets you define all the REST actions you like as regular Dancer2 route
 handlers, without explicitly handling the outgoing data format.
 
 =head2 resource
@@ -307,6 +281,6 @@ Cuny.
 
 =head1 SEE ALSO
 
-L<Dancer> L<http://en.wikipedia.org/wiki/Representational_State_Transfer>
+L<Dancer2> L<http://en.wikipedia.org/wiki/Representational_State_Transfer>
 
 =cut

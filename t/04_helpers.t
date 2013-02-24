@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Dancer::ModuleLoader;
+use Dancer2::ModuleLoader;
 use JSON;
 use Test::More import => ['!pass'];
 
@@ -9,8 +9,8 @@ plan tests => 16;
 {
 
     package Webservice;
-    use Dancer;
-    use Dancer::Plugin::REST;
+    use Dancer2;
+    use Dancer2::Plugin::REST;
 
     set serializer => 'JSON';
 
@@ -57,7 +57,7 @@ plan tests => 16;
 
 use JSON;
 
-use Dancer::Test apps => [ 'Webservice' ];
+use Dancer2::Test apps => [ 'Webservice' ];
 
 my $r = dancer_response( GET => '/user/1', { content_type => 'application/json' } );
 is $r->status, 400, 'HTTP code is 400';

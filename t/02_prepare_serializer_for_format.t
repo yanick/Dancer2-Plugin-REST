@@ -1,12 +1,12 @@
 use strict;
 use warnings;
-use Dancer::ModuleLoader;
+use Dancer2::ModuleLoader;
 use Test::More import => ['!pass'];
 
 plan skip_all => "JSON is needed for this test"
-    unless Dancer::ModuleLoader->load('JSON');
+    unless Dancer2::ModuleLoader->load('JSON');
 plan skip_all => "YAML is needed for this test"
-    unless Dancer::ModuleLoader->load('YAML');
+    unless Dancer2::ModuleLoader->load('YAML');
 
 
 my $data = { foo => 42 };
@@ -15,8 +15,8 @@ my $yaml = YAML::Dump($data);
 
 {
     package Webservice;
-    use Dancer;
-    use Dancer::Plugin::REST;
+    use Dancer2;
+    use Dancer2::Plugin::REST;
 
     setting environment => 'testing';
 
@@ -27,7 +27,7 @@ my $yaml = YAML::Dump($data);
         $data;
     };
 }
-use Dancer::Test apps => [ 'Webservice' ];
+use Dancer2::Test apps => [ 'Webservice' ];
 
 my @tests = (
     {

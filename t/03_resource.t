@@ -1,19 +1,19 @@
 use strict;
 use warnings;
-use Dancer::ModuleLoader;
+use Dancer2::ModuleLoader;
 use Test::More import => ['!pass'];
 use JSON;
 
-# Dancer::Test had a bug in version previous 1.3059_01 that prevent this test
+# Dancer2::Test had a bug in version previous 1.3059_01 that prevent this test
 # from running correctly.
-my $dancer_version = eval "\$Dancer::VERSION";
+my $dancer_version = eval "\$Dancer2::VERSION";
 $dancer_version =~ s/_//g;
-plan skip_all => "Dancer 1.3059_01 is needed for this test (you have $dancer_version)"
+plan skip_all => "Dancer2 1.3059_01 is needed for this test (you have $dancer_version)"
   if $dancer_version < 1.305901;
 
 my $api = int $dancer_version;
 
-# wrapper to keep all Dancers happy
+# wrapper to keep all Dancer2s happy
 sub request {
     my %arg = @_;
 
@@ -21,12 +21,12 @@ sub request {
         body => $arg{body},
     } ) if $api < 2;
 
-    require Dancer::Core::Request;
+    require Dancer2::Core::Request;
 
     $arg{body} = encode_json($arg{body})
         if ref $arg{body};
 
-    return Dancer::Core::Request->new(
+    return Dancer2::Core::Request->new(
         %arg,
         content_type => 'application/json',
     );
@@ -37,8 +37,8 @@ plan tests => 8;
 
 {
     package Webservice;
-    use Dancer;
-    use Dancer::Plugin::REST;
+    use Dancer2;
+    use Dancer2::Plugin::REST;
     use Test::More import => ['!pass'];
 
     set show_errors => 1;
@@ -89,7 +89,7 @@ plan tests => 8;
         "resource must have at least one action";
 }
 
-use Dancer::Test apps => [ 'Webservice' ];
+use Dancer2::Test apps => [ 'Webservice' ];
 
 my $r = dancer_response(GET => '/user/1');
 is_deeply decode_json($r->content), {user => undef},
