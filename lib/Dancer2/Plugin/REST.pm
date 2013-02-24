@@ -6,9 +6,8 @@ use Carp 'croak';
 use Dancer2 ':syntax';
 use Dancer2::Plugin;
 
-
 our $AUTHORITY = 'SUKRIA';
-our $VERSION   = '0.07';
+our $VERSION   = '0.08';
 
 use Moo;
 
@@ -168,7 +167,9 @@ for my $code (keys %http_codes) {
 }
 
 register_plugin for_versions => [1,2];
+
 1;
+
 __END__
 
 =pod
