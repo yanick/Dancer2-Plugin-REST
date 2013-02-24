@@ -8,7 +8,7 @@ WriteMakefile1(
     
     META_MERGE => {
         resources => {
-            repository => 'http://github.com/sukria/Dancer2-Plugin-REST',
+            repository => 'http://github.com/yanick/Dancer2-Plugin-REST',
         },
     },
 
@@ -17,7 +17,7 @@ WriteMakefile1(
     },
 
     PREREQ_PM => {
-        'Dancer' => '1.3014',
+        'Dancer2' => 0,
         'JSON'   => 0,
     },
 
