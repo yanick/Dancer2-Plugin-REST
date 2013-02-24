@@ -5,3 +5,5 @@ Makefile
 MANIFEST.bak
 cover_db
 blib
+MYMETA.json
+MYMETA.yml
