@@ -3,7 +3,6 @@ lib/Dancer2/Plugin/REST.pm
 Makefile.PL
 MANIFEST			This list of files
 README
-t/01_base.t
 t/02_prepare_serializer_for_format.t
 t/03_resource.t
 t/04_helpers.t

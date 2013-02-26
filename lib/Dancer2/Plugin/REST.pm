@@ -1,15 +1,15 @@
 package Dancer2::Plugin::REST;
+
 use strict;
 use warnings;
 
 use Carp 'croak';
-use Dancer2 ':syntax';
-use Dancer2::Plugin;
 
 our $AUTHORITY = 'SUKRIA';
 our $VERSION   = '0.08';
 
-use Moo;
+use Dancer2 ':syntax';
+use Dancer2::Plugin;
 
 with 'Dancer2::Plugin';
 
