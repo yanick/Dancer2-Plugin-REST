@@ -34,7 +34,8 @@ register prepare_serializer_for_format => sub {
     );
 
     hook 'before' => sub {
-        my $format = params->{'format'} || captures->{'format'};
+        my $format = params->{'format'};
+        $format  ||= captures->{'format'} if captures;
         return unless defined $format;
 
         my $serializer = $serializers->{$format};
