@@ -7,3 +7,4 @@ t/02_prepare_serializer_for_format.t
 t/03_resource.t
 t/04_helpers.t
 t/04_plugin_settings.t
+t/05_named_captures.t
