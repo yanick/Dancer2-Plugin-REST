@@ -34,7 +34,7 @@ register prepare_serializer_for_format => sub {
     );
 
     hook 'before' => sub {
-        my $format = params->{'format'};
+        my $format = params->{'format'} || captures->{'format'};
         return unless defined $format;
 
         my $serializer = $serializers->{$format};
@@ -191,6 +191,10 @@ Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
         User->find(params->{id});
     };
 
+    get qr{^/user/(?<id>\d+)\.(?<format>\w+)} => sub {
+        User->find(captures->{id});
+    };
+
     # curl http://mywebservice/user/42.json
     { "id": 42, "name": "John Foo", email: "john.foo@example.com"}
 
@@ -211,11 +215,14 @@ This plugin helps you write a RESTful webservice with Dancer2.
 When this pragma is used, a before filter is set by the plugin to automatically
 change the serializer when a format is detected in the URI.
 
-That means that each route you define with a B<:format> token will trigger a
-serializer definition, if the format is known.
+That means that each route you define with a B<:format> param or captures token 
+will trigger a serializer definition, if the format is known.
 
 This lets you define all the REST actions you like as regular Dancer2 route
 handlers, without explicitly handling the outgoing data format.
+
+Regexp routes will use the file-extension from captures->{'format'} to determine
+the serialization format.
 
 =head2 resource
 

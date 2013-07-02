@@ -1,3 +1,7 @@
+0.10 2013-07-02
+
+    * Support routes that use named-captures.
+
 0.09 2013-02-25
 
     * Fix to work with Moo v1.000007
@@ -16,7 +20,7 @@
 
 	[ TEST SUITE ]
 	* Skip test t/03_resource.t if Dancer is not >= 1.3059_01
-	  A bug in Dancer::Test in previous versions prevent the test from passing.
+      A bug in Dancer::Test in previous versions prevent the test from passing.
 
 0.05    2011-03-04
 
@@ -31,7 +35,7 @@ Version 0.04
 Version 0.03
     [ Franck Cuny ]
     * New keywords for ReST response status 
-	  (status_ok, status_created, ...)
+      (status_ok, status_created, ...)
 
 Version 0.02
 	* 100% coverage
@@ -39,6 +43,6 @@ Version 0.02
 
 Version 0.0001_01
 	* Support for prepare_serializer_for_format keyword
-	  autoamtically set a serializer according to params->{format}
-	* Support for resource definition
-	  When a resource is defined a set of routes are defined in a RESTful manner.
+      autoamtically set a serializer according to params->{format}
+    * Support for resource definition
+      When a resource is defined a set of routes are defined in a RESTful manner.
