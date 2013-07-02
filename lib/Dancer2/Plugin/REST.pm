@@ -6,7 +6,7 @@ use warnings;
 use Carp 'croak';
 
 our $AUTHORITY = 'SUKRIA';
-our $VERSION   = '0.09';
+our $VERSION   = '0.0902-TRIAL';
 
 use Dancer2 ':syntax';
 use Dancer2::Plugin;
@@ -35,6 +35,7 @@ register prepare_serializer_for_format => sub {
 
     hook 'before' => sub {
         my $format = params->{'format'};
+        $format  ||= captures->{'format'} if captures;
         return unless defined $format;
 
         my $serializer = $serializers->{$format};
@@ -191,6 +192,10 @@ Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
         User->find(params->{id});
     };
 
+    get qr{^/user/(?<id>\d+)\.(?<format>\w+)} => sub {
+        User->find(captures->{id});
+    };
+
     # curl http://mywebservice/user/42.json
     { "id": 42, "name": "John Foo", email: "john.foo@example.com"}
 
@@ -204,6 +209,21 @@ Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
 
 This plugin helps you write a RESTful webservice with Dancer2.
 
+=head1 CONFIGURATION
+
+The default format-serializer hash which maps C<:format> to 
+serializers follows. It's used to select a serializer and 
+then run <set serializer => $serializer;>.
+
+    serializers:
+      json: JSON
+      yml:  YAML
+      xml:  XML
+      dump: Dumper
+
+Adding a serializers hash to config.yml or environments/*.yml 
+will override these default serializations.
+
 =head1 KEYWORDS
 
 =head2 prepare_serializer_for_format
@@ -211,11 +231,14 @@ This plugin helps you write a RESTful webservice with Dancer2.
 When this pragma is used, a before filter is set by the plugin to automatically
 change the serializer when a format is detected in the URI.
 
-That means that each route you define with a B<:format> token will trigger a
-serializer definition, if the format is known.
+That means that each route you define with a B<:format> param or captures token 
+will trigger a serializer definition, if the format is known.
 
 This lets you define all the REST actions you like as regular Dancer2 route
 handlers, without explicitly handling the outgoing data format.
+
+Regexp routes will use the file-extension from captures->{'format'} to determine
+the serialization format.
 
 =head2 resource
 
