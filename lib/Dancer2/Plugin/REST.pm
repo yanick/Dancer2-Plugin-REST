@@ -6,7 +6,7 @@ use warnings;
 use Carp 'croak';
 
 our $AUTHORITY = 'SUKRIA';
-our $VERSION   = '0.09';
+our $VERSION   = '0.0901-TRIAL';
 
 use Dancer2 ':syntax';
 use Dancer2::Plugin;
