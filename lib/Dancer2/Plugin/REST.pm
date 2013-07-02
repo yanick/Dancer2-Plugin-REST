@@ -6,7 +6,7 @@ use warnings;
 use Carp 'croak';
 
 our $AUTHORITY = 'SUKRIA';
-our $VERSION   = '0.0901-TRIAL';
+our $VERSION   = '0.0902-TRIAL';
 
 use Dancer2 ':syntax';
 use Dancer2::Plugin;
@@ -208,6 +208,21 @@ Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
 =head1 DESCRIPTION
 
 This plugin helps you write a RESTful webservice with Dancer2.
+
+=head1 CONFIGURATION
+
+The default format-serializer hash which maps C<:format> to 
+serializers follows. It's used to select a serializer and 
+then run <set serializer => $serializer;>.
+
+    serializers:
+      json: JSON
+      yml:  YAML
+      xml:  XML
+      dump: Dumper
+
+Adding a serializers hash to config.yml or environments/*.yml 
+will override these default serializations.
 
 =head1 KEYWORDS
 
