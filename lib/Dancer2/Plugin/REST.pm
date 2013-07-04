@@ -209,6 +209,20 @@ Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
 
 This plugin helps you write a RESTful webservice with Dancer2.
 
+=head1 CONFIGURATION
+
+=head2 serializers
+
+The default format serializer hash which maps a given C<:format> to 
+a C<Dancer2::Serializer::*> serializer. Unless overriden in the 
+configuration, it defaults to:
+
+    serializers:
+      json: JSON
+      yml:  YAML
+      xml:  XML
+      dump: Dumper
+
 =head1 KEYWORDS
 
 =head2 prepare_serializer_for_format
