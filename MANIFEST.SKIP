@@ -10,3 +10,4 @@ MANIFEST.SKIP
 .perlcriticrc
 .perltidyrc
 MYMETA.*
+dist.ini

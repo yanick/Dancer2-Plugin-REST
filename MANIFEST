@@ -1,9 +1,0 @@
-CHANGES
-lib/Dancer2/Plugin/REST.pm
-Makefile.PL
-MANIFEST			This list of files
-README
-t/02_prepare_serializer_for_format.t
-t/03_resource.t
-t/04_helpers.t
-t/04_plugin_settings.t
