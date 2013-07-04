@@ -1,3 +1,7 @@
+
+{{$NEXT}}
+    * Support routes that use named-captures.
+
 0.09 2013-02-25
 
     * Fix to work with Moo v1.000007
