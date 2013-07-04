@@ -1,12 +1,10 @@
 package Dancer2::Plugin::REST;
+# ABSTRACT: A plugin for writing RESTful apps with Dancer2
 
 use strict;
 use warnings;
 
 use Carp 'croak';
-
-our $AUTHORITY = 'SUKRIA';
-our $VERSION   = '0.09';
 
 use Dancer2 ':syntax';
 use Dancer2::Plugin;
@@ -175,9 +173,6 @@ __END__
 
 =pod
 
-=head1 NAME
-
-Dancer2::Plugin::REST - A plugin for writing RESTful apps with Dancer2
 
 =head1 SYNOPSYS
 
