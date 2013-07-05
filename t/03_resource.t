@@ -8,8 +8,8 @@ use JSON;
 # from running correctly.
 my $dancer_version = eval "\$Dancer2::VERSION";
 $dancer_version =~ s/_//g;
-plan skip_all => "Dancer2 1.3059_01 is needed for this test (you have $dancer_version)"
-  if $dancer_version < 1.305901;
+plan skip_all => "Dancer2 0.04 is needed for this test (you have $dancer_version)"
+  if $dancer_version < 0.04;
 
 my $api = int $dancer_version;
 

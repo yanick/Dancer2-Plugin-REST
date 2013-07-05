@@ -1,5 +1,11 @@
 
-{{$NEXT}}
+0.11 2013-07-03
+
+    [ BUG FIXES]
+    * Test was checking for wrong version of Dancer2.
+
+0.10 2013-07-03
+
     * Support routes that use named-captures.
     * Documented serializers configuration.
 
