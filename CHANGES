@@ -1,7 +1,14 @@
+Revision history for Dancer2-Plugin-REST
+
+0.12 2013-07-06
+
+    [ BUG FIXES ]
+    * Still a few issues with the versions in test.
+
 
 0.11 2013-07-03
 
-    [ BUG FIXES]
+    [ BUG FIXES ]
     * Test was checking for wrong version of Dancer2.
 
 0.10 2013-07-03
