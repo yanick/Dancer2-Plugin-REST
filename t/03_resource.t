@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Dancer2::ModuleLoader;
+use Dancer2::Core::Request;
 use Test::More import => ['!pass'];
 use JSON;
 
@@ -11,17 +12,9 @@ $dancer_version =~ s/_//g;
 plan skip_all => "Dancer2 0.04 is needed for this test (you have $dancer_version)"
   if $dancer_version < 0.04;
 
-my $api = int $dancer_version;
-
 # wrapper to keep all Dancer2s happy
 sub request {
     my %arg = @_;
-
-    return ( $arg{method}, $arg{path}, {
-        body => $arg{body},
-    } ) if $api < 2;
-
-    require Dancer2::Core::Request;
 
     $arg{body} = encode_json($arg{body})
         if ref $arg{body};
