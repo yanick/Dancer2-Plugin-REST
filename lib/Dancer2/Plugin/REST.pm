@@ -9,6 +9,8 @@ use Carp 'croak';
 use Dancer2 ':syntax';
 use Dancer2::Plugin;
 
+use Moo::Role;
+
 with 'Dancer2::Plugin';
 
 my $content_types = {
