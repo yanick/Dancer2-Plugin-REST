@@ -11,3 +11,4 @@ MANIFEST.SKIP
 .perltidyrc
 MYMETA.*
 dist.ini
+.travis.yml
