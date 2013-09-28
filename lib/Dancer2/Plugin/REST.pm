@@ -20,7 +20,7 @@ my $content_types = {
 };
 
 register prepare_serializer_for_format => sub {
-    my $dsl = shift;
+    my $app = shift;
 
     my $conf        = plugin_setting;
     my $serializers = (
@@ -33,29 +33,29 @@ register prepare_serializer_for_format => sub {
         }
     );
 
-    $dsl->hook(
+    $app->hook(
         'before' => sub {
-            my $format = $dsl->params->{'format'};
-            $format ||= $dsl->captures->{'format'} if $dsl->captures;
+            my $format = $app->params->{'format'};
+            $format ||= $app->captures->{'format'} if $app->captures;
 
             return unless defined $format;
 
             my $serializer = $serializers->{$format};
 
             unless ($serializer) {
-                return $dsl->send_error(
+                return $app->send_error(
                     'unsupported format requested: ' . $format, 404);
             }
 
-            $dsl->set(serializer => $serializer);
+            $app->set(serializer => $serializer);
             my $ct = $content_types->{$format} || setting('content_type');
-            $dsl->content_type($ct);
+            $app->content_type($ct);
         }
     );
 };
 
 register resource => sub {
-    my ($self, $resource, %triggers) = plugin_args(@_);
+    my ($dsl, $resource, %triggers) = plugin_args(@_);
 
     my %actions = (
         get    => 'get',
@@ -68,7 +68,7 @@ register resource => sub {
       unless defined $resource && grep { $triggers{$_} } keys %actions;
 
     while (my ($action, $code) = each %triggers) {
-        $self->app->add_route(
+        $dsl->app->add_route(
             method => $actions{$action},
             regexp => $_,
             code   => $code,
