@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use Dancer2::ModuleLoader;
 use JSON;
 use Test::More import => ['!pass'];
 
@@ -23,14 +22,18 @@ plan tests => 16;
     my $last_id = 0;
 
     sub on_get_user {
-        my $id = params->{'id'};
+        my $ctx = shift;
+
+        my $id = $ctx->request->params->{'id'};
         return status_bad_request('id is missing') if !defined $users->{$id};
         status_ok( { user => $users->{$id} } );
     }
 
     sub on_create_user {
-        my $id   = ++$last_id;
-        my $user = params('body');
+        my $ctx = shift;
+
+        my $id = ++$last_id;
+        my $user = JSON::decode_json($ctx->request->body());
         $user->{id} = $id;
         $users->{$id} = $user;
 
@@ -38,18 +41,23 @@ plan tests => 16;
     }
 
     sub on_delete_user {
-        my $id      = params->{'id'};
+        my $ctx = shift;
+
+        my $id = $ctx->request->params->{'id'};
         my $deleted = $users->{$id};
         delete $users->{$id};
         status_accepted( { user => $deleted } );
     }
 
     sub on_update_user {
-        my $id   = params->{'id'};
+        my $ctx = shift;
+
+        my $id = $ctx->request->params->{'id'};
         my $user = $users->{$id};
         return status_not_found("user undef") unless defined $user;
 
-        $users->{$id} = { %$user, %{ params('body') } };
+        my $user_changed = JSON::decode_json($ctx->request->body());
+        $users->{$id} = { %$user, %$user_changed };
         status_accepted { user => $users->{$id} };
     }
 
