@@ -67,13 +67,20 @@ use JSON;
 
 use Dancer2::Test apps => [ 'Webservice' ];
 
-my $r = dancer_response( GET => '/user/1', { content_type => 'application/json' } );
+$ENV{CONTENT_TYPE} = 'application/json';
+
+my $r = dancer_response( GET => '/user/1' );
 is $r->status, 400, 'HTTP code is 400';
 is_deeply decode_json($r->content) => { error => "id is missing" }, 'Valid content';
 
-$r = dancer_response( POST => '/user', { body => encode_json( { name =>
-                'Alexis' } ),
-        content_type => 'application/json' } );
+$r = dancer_response( 
+    Dancer2::Core::Request->new(
+        method => 'POST',
+        path => '/user',
+        content_type => 'application/json',
+        body => encode_json( { name => 'Alexis' } ) 
+    )
+);
 is $r->{status}, 201, 'HTTP code is 201';
 is_deeply decode_json( $r->content ), { user => { id => 1, name => "Alexis" } },
   "create user works";
@@ -84,13 +91,15 @@ is_deeply decode_json($r->content), { user => { id => 1, name => 'Alexis' } },
   "user 1 is defined";
 
 $r = dancer_response(
-    PUT => '/user/1',
-    {   body => encode_json( {
+    Dancer2::Core::Request->new(
+       method => 'PUT',
+       path => '/user/1',
+       content_type => 'application/json',
+       body => encode_json( {
             nick => 'sukria',
             name => 'Alexis Sukrieh'
-        } ),
-        content_type => 'application/json',
-    }
+        } )
+    )
 );
 is $r->{status}, 202, 'HTTP code is 202';
 is_deeply decode_json($r->content),
@@ -98,13 +107,15 @@ is_deeply decode_json($r->content),
   "user 1 is updated";
 
 $r = dancer_response(
-    PUT => '/user/23',
-    {   body => encode_json( {
+    Dancer2::Core::Request->new(
+        method => 'PUT',
+        path => '/user/23',
+        content_type => 'application/json',
+       body => encode_json( {
             nick => 'john doe',
             name => 'John Doe'
         } ),
-        content_type => 'application/json',
-    }
+    )
 );
 is $r->status, 404, 'HTTP code is 404';
 is_deeply decode_json($r->content)->{error}, 'user undef', 'valid content';
@@ -120,10 +131,14 @@ $r = dancer_response( GET => '/user/1' );
 is $r->status, 400, 'HTTP code is 400';
 is_deeply decode_json($r->content)->{error}, 'id is missing', 'valid response';
 
-$r = dancer_response( POST => '/user', { 
-    body => encode_json( { name => 'Franck Cuny' } ),
-    content_type => 'application/json',
-});
+$r = dancer_response( 
+    Dancer2::Core::Request->new(
+        method => 'POST',
+        path => '/user',
+        content_type => 'application/json',
+        body => encode_json( { name => 'Franck Cuny' } ),
+    )
+);
 
 is_deeply decode_json($r->content), { user => { id => 2, name => "Franck Cuny" } },
   "id is correctly increased";
