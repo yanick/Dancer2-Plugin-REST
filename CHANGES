@@ -1,6 +1,6 @@
 Revision history for Dancer2-Plugin-REST
 
-0.13 2013-10-03
+0.20 2013-10-03
 
     [ BUG FIXES ]
     * Make the plugin Dancer2 v0.10 compatible.
