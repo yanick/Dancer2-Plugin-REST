@@ -1,12 +1,12 @@
 use strict;
 use warnings;
-use Dancer2::ModuleLoader;
+use Class::Load 'try_load_class';
 use Test::More import => ['!pass'];
 
 plan skip_all => "JSON is needed for this test"
-    unless Dancer2::ModuleLoader->load('JSON');
+    unless try_load_class('JSON');
 plan skip_all => "YAML is needed for this test"
-    unless Dancer2::ModuleLoader->load('YAML');
+    unless try_load_class('YAML');
 
 
 my $data = { foo => 42 };
