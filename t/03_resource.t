@@ -34,7 +34,6 @@ plan tests => 8;
     use Dancer2::Plugin::REST;
     use Test::More import => ['!pass'];
 
-use Data::Dumper;
     set show_errors => 1;
     set serializer => 'JSON';
     set logger => 'console';
