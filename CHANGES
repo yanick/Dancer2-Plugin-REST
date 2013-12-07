@@ -1,5 +1,10 @@
 Revision history for Dancer2-Plugin-REST
 
+0.21 2013-12-07
+
+    [ BUG FIXES ]
+    * Auto-serialization was done on the *next* request.
+
 0.20 2013-10-03
 
     [ BUG FIXES ]
