@@ -1,14 +1,13 @@
 use strict;
 use warnings;
-use Class::Load 'try_load_class';
+use Module::Runtime qw(use_module);
 use Test::More import => ['!pass'];
 use Data::Dumper;
 
 plan skip_all => "JSON is needed for this test"
-    unless try_load_class('JSON');
+    unless use_module('JSON');
 plan skip_all => "YAML is needed for this test"
-    unless try_load_class('YAML');
-
+    unless use_module('YAML');
 
 my $data = { foo => 42 };
 my $json = JSON::encode_json($data);
