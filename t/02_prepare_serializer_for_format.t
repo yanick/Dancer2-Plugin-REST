@@ -43,7 +43,7 @@ my @tests = (
     },
     { 
         request => [GET => '/foo.dump'],
-        content_type => qr'text/x-data-dumper; charset=UTF-8',
+        content_type => qr'text/x-data-dumper',
         response => $dump
     },
     { 

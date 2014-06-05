@@ -27,9 +27,9 @@ register prepare_serializer_for_format => sub {
     my $serializers = (
         ($conf && exists $conf->{serializers})
         ? $conf->{serializers}
-        : { 'json' => 'Dancer2::Serializer::JSON',
-            'yml'  => 'Dancer2::Serializer::YAML',
-            'dump' => 'Dancer2::Serializer::Dumper',
+        : { 'json' => 'JSON',
+            'yml'  => 'YAML',
+            'dump' => 'Dumper',
         }
     );
 
@@ -40,12 +40,17 @@ register prepare_serializer_for_format => sub {
             return unless defined $format;
 
             my $serializer = $serializers->{$format};
-
+            
             unless( $serializer ) {
                 return $dsl->send_error("unsupported format requested: " . $format, 404);
             }
 
             $dsl->set(serializer => $serializer);
+            $dsl->context->response( Dancer2::Core::Response->new(
+                %{ $dsl->context->response },
+                serializer => $dsl->set('serializer'),
+            ) );
+
             my $ct = $content_types->{$format} || $dsl->setting('content_type');
             $dsl->content_type($ct);
         }

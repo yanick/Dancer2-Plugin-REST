@@ -1,32 +1,29 @@
 use strict;
 use warnings;
 
-use Test::TCP;
-use LWP::UserAgent;
+use Plack::Test;
+use HTTP::Request::Common qw(GET POST PUT DELETE);
 
-use Test::More tests => 2;
-use Dancer2;
-use Dancer2::Plugin::REST;
+use Test::More tests => 1;
 
-test_tcp(
-    server => sub {
-        my $port = shift;
+{ package Webservice;  
 
-        prepare_serializer_for_format;
+    use Dancer2;
+    use Dancer2::Plugin::REST;
 
-        get '/:something.:format' => sub {
-            { hello => 'world' };
-        };
-        Dancer2->runner->server->port($port);
-        start;
-    },
-    client => sub {
-        my $port = shift;
-        my $ua = LWP::UserAgent->new;
-        my $res = $ua->get( "http://localhost:$port/foo.json" );
-        is $res->code => 200, "success";
-        is $res->content => '{"hello":"world"}', "content";
-    },
-);
+    prepare_serializer_for_format;
+
+    get '/:something.:format' => sub {
+        { hello => 'world' };
+    };
+}
+
+my $app = Dancer2->runner->psgi_app;
+
+test_psgi $app, sub {
+    my $cb = shift;
+    my $res = $cb->( GET "/foo.json", 'Content-Type' => 'application/json' );
+    is $res->content => '{"hello":"world"}';
+};
 
 
