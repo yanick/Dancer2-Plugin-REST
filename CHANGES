@@ -1,5 +1,12 @@
 Revision history for Dancer2-Plugin-REST
 
+{{$NEXT}}
+
+    [ BUG FIXES ]
+    * Fix tests (and code itself) to work with Dancer2 v0.140001.
+        (GH#2, veryrusty, Yanick Champoux)
+
+
 0.21 2013-12-07
 
     [ BUG FIXES ]
