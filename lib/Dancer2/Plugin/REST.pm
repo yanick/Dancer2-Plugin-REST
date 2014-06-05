@@ -6,7 +6,7 @@ use warnings;
 
 use Carp 'croak';
 
-use Dancer2;
+use Dancer2 0.14001;
 use Dancer2::Plugin;
 use Class::Load qw/ try_load_class /;
 
