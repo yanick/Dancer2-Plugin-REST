@@ -46,8 +46,8 @@ register prepare_serializer_for_format => sub {
             }
 
             $dsl->set(serializer => $serializer);
-            $dsl->context->response( Dancer2::Core::Response->new(
-                %{ $dsl->context->response },
+            $dsl->app->set_response( Dancer2::Core::Response->new(
+                %{ $dsl->app->response },
                 serializer => $dsl->set('serializer'),
             ) );
 
