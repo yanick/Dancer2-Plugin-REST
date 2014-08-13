@@ -1,9 +1,10 @@
 use strict;
 use warnings;
-use JSON;
-use Test::More import => ['!pass'];
+use Test::More import => ['!pass'], tests => 16;
+use Plack::Test;
+use HTTP::Request::Common qw(GET POST PUT DELETE);
 
-plan tests => 16;
+use JSON;
 
 {
 
@@ -63,84 +64,71 @@ plan tests => 16;
 
 }
 
-use JSON;
+my $app = Dancer2->runner->psgi_app;
 
-use Dancer2::Test apps => [ 'Webservice' ];
+test_psgi $app, sub {
+    my $cb = shift;
 
-$ENV{CONTENT_TYPE} = 'application/json';
+    my $r = $cb->( GET '/user/1', 'Content-Type' => 'application/json' );
+    is( $r->code, 400, 'HTTP code is 400');
+    is_deeply( decode_json($r->content) => { error => "id is missing" },
+        'Valid content'
+    );
 
-my $r = dancer_response( GET => '/user/1' );
-is $r->status, 400, 'HTTP code is 400';
-is_deeply decode_json($r->content) => { error => "id is missing" }, 'Valid content';
+    $r = $cb->( POST '/user', 'Content-Type' => 'application/json',
+        Content => encode_json( { name => 'Alexis' } )
+    );
+    is( $r->code, 201, 'HTTP code is 201');
+    is_deeply( decode_json( $r->content ), { user => { id => 1, name => "Alexis" } },
+        "create user works"
+    );
 
-$r = dancer_response( 
-    Dancer2::Core::Request->new(
-        method => 'POST',
-        path => '/user',
-        content_type => 'application/json',
-        body => encode_json( { name => 'Alexis' } ) 
-    )
-);
-is $r->{status}, 201, 'HTTP code is 201';
-is_deeply decode_json( $r->content ), { user => { id => 1, name => "Alexis" } },
-  "create user works";
+    $r = $cb->( GET '/user/1' );
+    is( $r->code, 200, 'HTTP code is 200' );
+    is_deeply( decode_json($r->content), { user => { id => 1, name => 'Alexis' } },
+        "user 1 is defined"
+    );
 
-$r = dancer_response( GET => '/user/1' );
-is $r->status, 200, 'HTTP code is 200';
-is_deeply decode_json($r->content), { user => { id => 1, name => 'Alexis' } },
-  "user 1 is defined";
-
-$r = dancer_response(
-    Dancer2::Core::Request->new(
-       method => 'PUT',
-       path => '/user/1',
-       content_type => 'application/json',
-       body => encode_json( {
+    $r = $cb->( PUT '/user/1', 'Content-Type' => 'application/json',
+        Content => encode_json( {
             nick => 'sukria',
             name => 'Alexis Sukrieh'
         } )
-    )
-);
-is $r->{status}, 202, 'HTTP code is 202';
-is_deeply decode_json($r->content),
-  { user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria' } },
-  "user 1 is updated";
+    );
+    is( $r->code, 202, 'HTTP code is 202' );
+    is_deeply( decode_json($r->content),
+        { user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria' } },
+        "user 1 is updated"
+    );
 
-$r = dancer_response(
-    Dancer2::Core::Request->new(
-        method => 'PUT',
-        path => '/user/23',
-        content_type => 'application/json',
-       body => encode_json( {
+    $r = $cb->( PUT '/user/23', 'Content-Type' => 'application/json',
+        Content => encode_json( {
             nick => 'john doe',
             name => 'John Doe'
-        } ),
-    )
-);
-is $r->status, 404, 'HTTP code is 404';
-is_deeply decode_json($r->content)->{error}, 'user undef', 'valid content';
+        } )
+    );
+    is( $r->code, 404, 'HTTP code is 404' );
+    is_deeply( decode_json($r->content)->{error}, 'user undef',
+        'valid content'
+    );
 
-$r = dancer_response( DELETE => '/user/1' );
-is_deeply decode_json($r->content),
-  { user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria' } },
-  "user 1 is deleted";
-is $r->status, 202, 'HTTP code is 202';
+    $r = $cb->( DELETE '/user/1' );
+    is_deeply( decode_json($r->content),
+        { user => { id => 1, name => 'Alexis Sukrieh', nick => 'sukria' } },
+        "user 1 is deleted"
+    );
+    is( $r->code, 202, 'HTTP code is 202' );
 
+    $r = $cb->( GET '/user/1' );
+    is( $r->code, 400, 'HTTP code is 400');
+    is_deeply( decode_json($r->content)->{error}, 'id is missing',
+        'valid response');
 
-$r = dancer_response( GET => '/user/1' );
-is $r->status, 400, 'HTTP code is 400';
-is_deeply decode_json($r->content)->{error}, 'id is missing', 'valid response';
-
-$r = dancer_response( 
-    Dancer2::Core::Request->new(
-        method => 'POST',
-        path => '/user',
-        content_type => 'application/json',
-        body => encode_json( { name => 'Franck Cuny' } ),
-    )
-);
-
-is_deeply decode_json($r->content), { user => { id => 2, name => "Franck Cuny" } },
-  "id is correctly increased";
-is $r->status, 201, 'HTTP code is 201';
-
+    $r = $cb->( POST '/user', 'Content-Type' => 'application/json',
+        Content => encode_json( { name => 'Franck Cuny' } )
+    );
+    is_deeply( decode_json($r->content), { user => { id => 2, name => "Franck Cuny" } },
+        "id is correctly increased"
+    );
+    is( $r->code, 201, 'HTTP code is 201' );
+}

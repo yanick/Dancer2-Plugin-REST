@@ -1,17 +1,18 @@
 use strict;
 use warnings;
-use Class::Load 'try_load_class';
+use Module::Runtime qw(use_module);
 use Test::More import => ['!pass'];
+use Data::Dumper;
 
 plan skip_all => "JSON is needed for this test"
-    unless try_load_class('JSON');
+    unless use_module('JSON');
 plan skip_all => "YAML is needed for this test"
-    unless try_load_class('YAML');
-
+    unless use_module('YAML');
 
 my $data = { foo => 42 };
 my $json = JSON::encode_json($data);
 my $yaml = YAML::Dump($data);
+my $dump = Data::Dumper::Dumper($data);
 
 {
     package Webservice;
@@ -39,6 +40,11 @@ my @tests = (
         request => [GET => '/foo.json'],
         content_type => qr'application/json',
         response => $json
+    },
+    { 
+        request => [GET => '/foo.dump'],
+        content_type => qr'text/x-data-dumper',
+        response => $dump
     },
     { 
         request => [GET => '/foo.yml'],

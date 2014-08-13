@@ -1,0 +1,78 @@
+Revision history for Dancer2-Plugin-REST
+
+{{$NEXT}}
+ [API CHANGES]
+
+ [BUG FIXES]
+
+ [DOCUMENTATION]
+
+ [ENHANCEMENTS]
+
+ [NEW FEATURES]
+
+ [STATISTICS]
+
+0.22 2014-06-05
+ [BUG FIXES]
+ - Fix tests (and code itself) to work with Dancer2 v0.140001. (GH#2,
+   veryrusty, Yanick Champoux)
+
+ [STATISTICS]
+ - code churn: 12 files changed, 272 insertions(+), 302 deletions(-)
+
+0.21 2013-12-07
+ [BUG FIXES]
+ - Auto-serialization was done on the *next* request.
+
+0.20 2013-10-03
+ [BUG FIXES]
+ - Make the plugin Dancer2 v0.10 compatible. (GH#4, jbolila)
+
+0.12 2013-07-06
+ [BUG FIXES]
+ - Still a few issues with the versions in test.
+
+0.11 2013-07-03
+ [BUG FIXES]
+ - Test was checking for wrong version of Dancer2.
+
+0.10 2013-07-03
+ - Support routes that use named-captures.
+ - Documented serializers configuration.
+
+0.09 2013-02-25
+ - Fix to work with Moo v1.000007
+
+0.08 2013-02-24
+ - Fork for Dancer2
+
+0.07 2011-11-01
+ - Minor updates to fix warnings with Dancer 1.3080
+ - Fix POD
+ - (Alexis Sukrieh)
+
+0.06 2011-05-28
+ [TEST SUITE]
+ - Skip test t/03_resource.t if Dancer is not >= 1.3059_01 A bug in
+   Dancer::Test in previous versions prevent the test from passing.
+
+0.05 2011-03-04
+ [Alexis Sukrieh]
+ - Add all HTTP response status
+ - Version 0.03
+
+ [BUG FIXES]
+ - Fix the test suite with dancer_response
+ - Fix dependencies: Dancer 1.3014
+ - Version 0.04
+
+ [Franck Cuny]
+ - New keywords for ReST response status  (status_ok, status_created, ...)
+ - Version 0.02 * 100% coverage * fix a bug in 'resource' (order of route
+   hander definition)
+ - Version 0.0001_01 * Support for prepare_serializer_for_format keyword
+   automatically set a serializer according to params->{format} * Support
+   for resource definition When a resource is defined a set of routes are
+   defined in a RESTful manner.
+

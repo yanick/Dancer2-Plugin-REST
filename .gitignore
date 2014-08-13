@@ -8,3 +8,4 @@ blib
 MYMETA.json
 MYMETA.yml
 Dancer2-Plugin-REST-*
+.watsonrc

@@ -1,3 +1,4 @@
+Dancer2-.*
 t\/logs\/.*log
 cover_db
 \.git
